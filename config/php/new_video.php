@@ -3,11 +3,15 @@ include "general_function.php";
 include "db.php";
 session_start();
 $video_id = generateVideoUid();
-$user_id = $_SESSION["userid"];
-$video_url = $_POST["youtube_link"];
-$channel_id = $_SESSION["channel_id"];
+$user_id = $connect->real_escape_string($_SESSION["userid"]);
+$video_url = $connect->real_escape_string($_POST["youtube_link"]);
+$channel_id = $connect->real_escape_string($_SESSION["channel_id"]);
 if (!str_contains($video_url, "v=")) {
-    echo json_encode(["code" => 201, "message" => "Youtube url is invalid."]);
+    echo json_encode(["0" => ["code" => 201, "message" => "Youtube url is invalid."]]);
+    return 0;
+}
+if (checkDups($connect, $user_id, $video_url)) {
+    echo json_encode(["0" => ["code" => 944, "message" => "This video has been already posted!"]]);
     return 0;
 }
 $data = explode("v=", $video_url);
@@ -19,7 +23,7 @@ if (str_contains($response, "Not Found")) {
     if (verify_ownership($channel_id, $validator["items"]["0"]["snippet"]["channelId"]) == 200) {
         $res_handle = json_encode($validator["items"]["0"]["snippet"]);
 
-        $sql = "INSERT INTO `od_networktv`.`videos` (`VIDEO_ID`, `USER_ID`, `VIDEO_URL`, `VIDEO_DETAILS`, `VIDEO_VIEWS`, `VIDEO_LIKES`) VALUES (?,?,?,?,0,0);";
+        $sql = "INSERT INTO `od_networktv`.`videos` (`VIDEO_ID`, `USER_ID`, `VIDEO_URL`, `VIDEO_DETAILS`, `VIDEO_VIEWS`, `VIDEO_LIKES`) VALUES (?,?,?,?,0,0) ;";
         $stmt = $connect->prepare($sql);
         $stmt->bind_param("ssss", $video_id, $user_id, $video_url, $res_handle);
         if ($stmt->execute()) {

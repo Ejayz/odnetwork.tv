@@ -62,6 +62,7 @@ $("#post_video").on("click", () => {
       youtube_link: $("#youtube_link").val()
     },
     success: function (response) {
+      console.log(response)
       var parsed = JSON.parse(response)
       if (parsed["0"].code == 200) {
         success(parsed["0"].message)
@@ -79,6 +80,8 @@ $("#post_video").on("click", () => {
       } else if (parsed["0"].code == 404) {
         error(parsed["0"].message)
       } else if (parsed["0"].code == 201) {
+        error(parsed["0"].message)
+      } else if (parsed["0"].code == 944) {
         error(parsed["0"].message)
       }
 

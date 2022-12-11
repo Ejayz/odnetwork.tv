@@ -30,6 +30,7 @@ if ($row_num == 1) {
         $_SESSION["username"] = $row["USERNAME"];
         $_SESSION["token"] = jwt($randomstring);
         $_SESSION["channel_id"] = $row["YOUTUBE_CHANNEL_ID"];
+        $_SESSION["wallet"]=$row["WALLET_ID"];
         echo "200:Welcome back " . $username . ".:" . $_SESSION["token"];
     } else {
         echo "401:Please check your username or password";

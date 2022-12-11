@@ -39,3 +39,7 @@ $(document).ready(() => {
     error("You should login before accessing some portion of this website.");
   }
 });
+
+$("#data").on("change",()=>{
+  $("#data").val()
+})

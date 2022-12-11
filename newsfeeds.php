@@ -1,9 +1,10 @@
 <?php
 session_start();
-if (!(isset($_SESSION["token"]) )) {
-  header("Location:/login.php");  
+if (count($_SESSION) !== 5) {
+    header("Location:/login.php");
 }
 include "config/php/general_function.php";
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

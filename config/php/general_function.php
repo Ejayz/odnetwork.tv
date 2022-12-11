@@ -261,3 +261,17 @@ function printMenu()
         </div>
     </div>';
 }
+
+function checkDups($connect, $userid, $video_url)
+{
+    $sql = "select * from videos where VIDEO_URL=? AND USER_ID=? AND IS_EXIST='true'";
+    $stmt = $connect->prepare($sql);
+    $stmt->bind_param("ss", $video_url, $userid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows == 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
