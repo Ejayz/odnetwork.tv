@@ -12,5 +12,9 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('tw-elements/dist/plugin'),
+    require('prettier-plugin-tailwindcss')
+  ],
+  "pluginSearchDirs": false
 }

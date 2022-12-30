@@ -1,6 +1,11 @@
+"use client"
 import next from 'next';
 import '../styles/globals.css';
-import Navbar from "./navbar";
+import Script from 'next/script';
+import store from '../store/store';
+import { Provider } from 'react-redux';
+
+
 
 export default function RootLayout({
   children,
@@ -8,13 +13,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html>
-     
+  <Provider store={store}>
+        <html lang='en' className='overflow-hidden'>
       <head />
-      <body> 
-      <Navbar/>
+      <title>Login OdNetwork.Tv</title>
+      <body className='overflow-hidden'>
+     
       {children}
+      
       </body>
+      <Script src="/scripts/refreshToken.js"></Script>
     </html>
+  </Provider>
+  
   )
 }
