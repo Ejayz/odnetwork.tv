@@ -10,15 +10,15 @@ dotenv.config();
 var secret: any = process.env.JWT_KEY;
 function login(query: string, email: any) {
   return new Promise((resolve, rejects) => {
-    connection.query(query, [email], (err, result, feilds) => {
-      if (err) {
-        rejects(err);
-        connection.end();
-      }
-      {
-        resolve(result);
-        connection.end();
-      }
+    connection.getConnection((err, conn) => {
+      conn.query(query, [email], (err, result, feilds) => {
+        if (err) {
+          rejects(err);
+        } else {
+          resolve(result);
+        }
+      });
+      conn.release();
     });
   });
 }
@@ -70,6 +70,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
     })
     .catch((e) => {
-      res.status(500).json({ message: "something went wrong" });
+      if (e.code == "ECONNREFUSED") {
+        res.status(500).json({
+          code: 500,
+          message: "Something went wrong connecting to database :" + e.code,
+        });
+      } else if (e.code == "ERR_HTTP_HEADERS_SENT") {
+      }
+      res
+        .status(500)
+        .json({ code: 500, message: "something went wrong" + e.code });
     });
 }

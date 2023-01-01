@@ -1,43 +1,58 @@
-"use client";
 import Head from "next/head";
 import Image from "next/image";
-import React, { useSelector, useDispatch } from "react-redux";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Inter } from "@next/font/google";
+import styles from "../styles/Home.module.css";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function Page() {
-  const password = useRef(null);
+const inter = Inter({ subsets: ["latin"] });
+export default function Home() {
   const router = useRouter();
-  const [showPassword,setshowPassword]=useState(false)
+  const [showPassword, setshowPassword] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>();
+  const [email, setEmail] = useState<string>();
+  const [remember_me, setRemember] = useState<boolean>();
+
   const LoginUser = async (event: any) => {
     event.preventDefault();
-    console.log(event);
-    let headersList = {
-      Accept: "*/*",
-      "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-      "Content-Type": "application/json",
-    };
 
-    let bodyContent = JSON.stringify({
-      email: event.target.email.value,
-      password: event.target.password.value,
-      remember_me: event.target.remember_me.value,
-    });
-    let response = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      body: bodyContent,
-      headers: headersList,
-    });
+    console.log(email);
 
-    let data = JSON.parse(await response.text());
-    console.log(data);
-    if (data.code == 200) {
-      //  dispatch(update_token(data))
-      router.push("/faq");
+    if (email == "" || password == "") {
+      toast.error("Email/Password is empty . Please provide one");
+    } else {
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+
+      let bodyContent = JSON.stringify({
+        email: email,
+        password: password,
+        remember_me: event.target.remember_me.value,
+      });
+      let response = await fetch("http://localhost:3000/api/login", {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList,
+      });
+
+      let data = JSON.parse(await response.text());
+      console.log(data);
+      if (data.code == 200) {
+        window.localStorage.setItem("token_a", data.token);
+        toast.success(data.message);
+        setTimeout(() => {
+          router.push("/feeds");
+        }, 5000);
+      } else if (data.code == 500) {
+        toast.error(data.message);
+      }
     }
   };
-
-
 
   return (
     <>
@@ -47,6 +62,18 @@ export default function Page() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <main className="background flex h-screen w-screen flex-row overflow-x-auto lg:overflow-hidden">
         <section className="h-screen">
           <div className="container  h-full px-6 py-12">
@@ -70,33 +97,40 @@ export default function Page() {
                       id="email"
                       name="email"
                       placeholder="Email address"
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
-                  <div className="mb-6">
+                  <div className="mb-6 flex flex-row">
                     <input
-                      type={showPassword?'text':'password'}
+                      type={showPassword ? "text" : "password"}
                       className="form-control m-0 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-4 py-2 text-xl font-normal text-gray-700 transition ease-in-out focus:border-blue-600 focus:bg-white focus:text-gray-700 focus:outline-none"
                       placeholder="Password"
                       id="password"
                       name="password"
-                      ref={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
-                    <input
-                      type="checkbox"
-                      name="View Password"
-                      id="View_Password"
-                      onClick={()=>setshowPassword(!showPassword)}
+                    <Image
+                      className="mx-auto my-auto ml-2"
+                      onClick={() => setshowPassword(!showPassword)}
+                      src={
+                        showPassword
+                          ? "./images/eye-solid.svg"
+                          : "./images/eye-slash-solid.svg"
+                      }
+                      alt={"View Password"}
+                      width={40}
+                      height={40}
                     />
                   </div>
-
                   <div className="mb-6 flex items-center justify-between">
                     <div className="form-group form-check">
                       <input
                         type="checkbox"
                         className="form-check-input float-left mt-1 mr-2 h-4 w-4 cursor-pointer appearance-none rounded-sm border border-gray-300 bg-white bg-contain bg-center bg-no-repeat align-top transition duration-200 checked:border-blue-600 checked:bg-blue-600 focus:outline-none"
-                        defaultChecked
                         id="remember_me"
                         name="remember_me"
+                        value="true"
+                        onChange={(e) => setRemember(e.target.checked)}
                       />
                       <label
                         className="form-check-label inline-block text-gray-800"
