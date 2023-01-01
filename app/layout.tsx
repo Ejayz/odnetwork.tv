@@ -15,13 +15,9 @@ export default function RootLayout({
   return (
   <Provider store={store}>
         <html lang='en' className='overflow-hidden'>
-      <head />
-      <title>Login OdNetwork.Tv</title>
-      <body className='overflow-hidden'>
-     
-      {children}
-      
-      </body>
+         <body>
+           {children}
+         </body>
       <Script src="/scripts/refreshToken.js"></Script>
     </html>
   </Provider>

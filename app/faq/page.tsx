@@ -1,10 +1,14 @@
-import React from "react"
-import { get_authholder } from "../auth_holder"
-export default function Faq(){
+"use client"
+import { RootState } from "../../store/store"
+import React,{useSelector,useDispatch} from "react-redux"
+import Head from "next/head"
+export default function Page(){
+
+const auth=useSelector((state:RootState)=>state.authtokenReducer.value)
+const dispatch=useDispatch()
 
 
-
-    return (
-        <p className="text-white">auth:{get_authholder()}</p>
+    return ( 
+<p>hello</p>
     )
 }

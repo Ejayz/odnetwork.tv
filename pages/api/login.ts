@@ -5,32 +5,39 @@ import connection from './mysql'
 import * as bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { json } from 'stream/consumers'
+import { connect } from 'http2'
 dotenv.config()
 var secret:any =process.env.JWT_KEY
 function login(query:string,email:any){
   return new Promise((resolve,rejects)=>{
     connection.query(query,[email],(err,result,feilds)=>{
-      if (err) rejects(err);
-      console.log(result)
-      resolve(result)
+      if (err)
+      {
+        rejects(err)
+      } {
+         resolve(result)
+      }
+     
       })
+      connection.end()
    })
 }
-
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log(req.body)
  if(req.body==null){
  res.statusCode=404
- res.end("Something went wrong")
+ res.status(404).end("Something went wrong")
  return
  }
-const {email,password,remember_me}=req.body
+
+const email=req.body.email
+const password=req.body.password
+const remember_me=req.body.remember_me
  var query:string = "select EMAIL,USERNAME,USER_ID,YOUTUBE_CHANNEL_ID,WALLET_ID,PASSWORD,PROFILE_PIC from users_account where EMAIL=? and IS_EXIST='true'"
-login(query,email).then((result:any)=>{
-  if(result==1){
+return login(query,email).then((result:any)=>{
+  if(result.length==1){
       bcrypt.compare(password, result[0].PASSWORD, function(err, resu) {
     if(resu){
       var token=jwt.sign({
@@ -41,23 +48,27 @@ login(query,email).then((result:any)=>{
         "wallet_id":result[0].WALLET_ID,
         "profile_pic":result[0].PROFILE_PIC
       },secret) 
-      res.json({
+   res.status(200).json({
         code:200,
         token:token,
         message:"Welcome back "+result[0].USERNAME
       })
+
     }else{
-      res.json({"code":401,
+      res.status(401).json({"code":401,
     "message":"Username/Password do not match in our record!"})
     }
-    res.end()
+
    
 });
   }else{
-    res.json({"code":401,
+    res.status(401).json({"code":401,
+    "message":"Username/Password do not match in our record!"
   })
+ 
   }
 
+}).catch((e)=>{
+  res.status(500).json({"message":"something went wrong"})
 })
-return 
 }
