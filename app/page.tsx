@@ -1,27 +1,28 @@
+"use client";
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import styles from "../styles/Home.module.css";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const inter = Inter({ subsets: ["latin"] });
-export default function Home() {
+export default function Page() {
   const router = useRouter();
+
   const [showPassword, setshowPassword] = useState<boolean>(false);
-  const [password, setPassword] = useState<string>();
-  const [email, setEmail] = useState<string>();
-  const [remember_me, setRemember] = useState<boolean>();
+  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [remember_me, setRemember] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
 
   const LoginUser = async (event: any) => {
     event.preventDefault();
-
+    setisLoading(true);
     console.log(email);
-
     if (email == "" || password == "") {
       toast.error("Email/Password is empty . Please provide one");
+      setisLoading(false);
     } else {
       let headersList = {
         Accept: "*/*",
@@ -50,6 +51,10 @@ export default function Home() {
         }, 5000);
       } else if (data.code == 500) {
         toast.error(data.message);
+        setisLoading(false);
+      } else if (data.code == 401) {
+        toast.error(data.message);
+        setisLoading(false);
       }
     }
   };
@@ -62,18 +67,6 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       <main className="background flex h-screen w-screen flex-row overflow-x-auto lg:overflow-hidden">
         <section className="h-screen">
           <div className="container  h-full px-6 py-12">
@@ -147,12 +140,36 @@ export default function Home() {
                     </a>
                   </div>
                   <button
+                    disabled={isLoading ? true : false}
                     type="submit"
-                    className="inline-block w-full rounded bg-blue-600 px-7 py-3 text-sm font-medium uppercase leading-snug text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
+                    className="inline-block flex w-full rounded bg-blue-600 px-7 py-3 text-sm font-medium uppercase leading-snug text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
                     data-mdb-ripple="true"
                     data-mdb-ripple-color="light"
                   >
-                    Sign in
+                    <div
+                      className={
+                        isLoading ? "collapse" : "visible" + " mx-auto my-auto"
+                      }
+                    >
+                      <span>Sign in</span>
+                    </div>
+                    <div
+                      className={
+                        isLoading
+                          ? "visible" + " mx-auto flex flex-row"
+                          : "collapse"
+                      }
+                    >
+                      <span className={"my-auto text-center"}>
+                        Please wait...
+                      </span>
+                      <div
+                        className="spinner-border inline-block h-8 w-8 animate-spin rounded-full border-4"
+                        role="status"
+                      >
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
                   </button>
                 </form>
               </div>

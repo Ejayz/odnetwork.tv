@@ -6,6 +6,7 @@ import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { json } from "stream/consumers";
 import { connect } from "http2";
+import { serialize } from "cookie";
 dotenv.config();
 var secret: any = process.env.JWT_KEY;
 function login(query: string, email: any) {
@@ -49,6 +50,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
                 profile_pic: result[0].PROFILE_PIC,
               },
               secret
+            );
+            res.setHeader(
+              "Set-Cookie",
+              serialize("token", token, { path: "/" })
             );
             res.status(200).json({
               code: 200,
