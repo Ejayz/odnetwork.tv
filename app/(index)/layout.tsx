@@ -1,9 +1,8 @@
 "use client";
-import "../styles/globals.css";
+import "@/styles/globals.css"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Suspense } from "react";
-import Loading from "./(users)/feeds/loading";
 import { useSearchParams } from "next/navigation";
 export default function RootLayout({
   children,
@@ -17,7 +16,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="overflow-hidden">
       <body>
-        <Suspense fallback={<Loading />} />
         {children}
         <ToastContainer
           position="top-right"

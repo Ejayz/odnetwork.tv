@@ -1,9 +1,6 @@
 "use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Navbar from "../../components/navbar";
-import SideNav from "../../components/sidenav";
+import Navbar from "@/components/navbar";
+import SideNav from "@/components/sidenav"
 
 export default function Page() {
   return (

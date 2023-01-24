@@ -55,14 +55,6 @@ export default function Navbar() {
           </div>
 
           <div className="relative flex items-center">
-            <div className="dropdown relative">
-              <img
-                src="https://mdbootstrap.com/img/new/avatars/2.jpg"
-                className="h-12 w-12 rounded-full"
-                alt=""
-                loading="lazy"
-              />
-            </div>
           </div>
         </div>
       </nav>

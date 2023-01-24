@@ -4,13 +4,14 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import connection from "./mysql";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { json } from "stream/consumers";
-import { connect } from "http2";
 import { serialize } from "cookie";
 dotenv.config();
 var secret: any = process.env.JWT_KEY;
 function login(query: string, email: any) {
   return new Promise((resolve, rejects) => {
+ 
+    try {
+      
     connection.getConnection((err, conn) => {
       conn.query(query, [email], (err, result, feilds) => {
         if (err) {
@@ -21,6 +22,11 @@ function login(query: string, email: any) {
       });
       conn.release();
     });
+
+    } catch (error) {
+      console.log(error)
+    }
+
   });
 }
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
